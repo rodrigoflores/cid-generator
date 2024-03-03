@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile.proxy
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy.yaml
-      - ./target/wasm32-unknown-unknown/release/myenvoyfilter.wasm:/etc/myenvoyfilter.wasm
+      - ./target/wasm32-unknown-unknown/release/cid_generator.wasm:/etc/cid_generator.wasm
     networks:
       - envoymesh
     expose:
@@ -17,17 +17,17 @@ services:
       - "18001:8001"
 
   web_service:
-    image: otomato/http-echo
-    command:
-      - '-text="Welcome to WASM land"'
+    image: kong/httpbin
+    # command:
+    #   - '-text="Welcome to WASM land"'
     networks:
       envoymesh:
         aliases:
           - web_service
     expose:
-      - "5678"
+      - "80"
     ports:
-      - "18080:5678"
+      - "18080:80"
 
 networks:
   envoymesh: {}
