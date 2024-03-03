@@ -24,25 +24,26 @@ pub fn _start() {
 
 impl Context for RandomStringGenerator {}
 
+use rand::{distributions::Alphanumeric, Rng};
+
 impl HttpContext for RandomStringGenerator {
     fn on_http_request_headers(&mut self, _:usize, _: bool) -> Action {
-        let piece = "OIOI5";
-//        let piece = &piece_s[..]
-
+        let piece: String = rand::thread_rng().sample_iter(&Alphanumeric).take(5).map(char::from).collect();
         info!("Piece: {}", piece);
 
         for (name, value) in &self.get_http_request_headers() {
             info!("In WASM : #{} -> {}: {}", self.context_id, name, value);
             info!("Seed: {}", self.seed);
+            info!("Piece: {}", piece)
         }
         let current_header = self.get_http_request_header("X-Correlation-ID");
 
         match current_header {
             Some(cid) => {
-                self.set_http_request_header("X-Correlation-ID", Some(&(cid.to_string() + "." + piece)));
+                self.set_http_request_header("X-Correlation-ID", Some(&(cid.to_string() + "." + &piece[..])));
             },
             None => {
-                self.set_http_request_header("X-Correlation-ID", Some(piece));
+                self.set_http_request_header("X-Correlation-ID", Some(&piece[..]));
             }
         }
         Action::Continue

@@ -6,7 +6,7 @@ services:
       dockerfile: Dockerfile.proxy
     volumes:
       - ./envoy/envoy.yaml:/etc/envoy.yaml
-      - ./target/wasm32-unknown-unknown/release/cid_generator.wasm:/etc/cid_generator.wasm
+      - ./target/wasm32-wasi/release/cid_generator.wasm:/etc/cid_generator.wasm
     networks:
       - envoymesh
     expose:
